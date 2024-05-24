@@ -2,13 +2,18 @@ package com.afmail.mail_sender;
 
 import java.util.Properties;
 
+import javax.mail.Address;
 import javax.mail.Authenticator;
+import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class App {
 	private static String email = "ale.fenandes23@gmail.com";
-	private static String password = "46422278As";
+	private static String password = "ratc elzt ddll ljwk";
 
 	public static void main(String[] args) {
 		Properties properties = new Properties();
@@ -27,7 +32,17 @@ public class App {
 					return new PasswordAuthentication(email, password);
 				}
 			});
-			System.out.println(password);
+			
+			Address[] toUsers = InternetAddress.parse("alex.silva250@hotmail.com");
+			
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(email));
+			message.setRecipients(Message.RecipientType.TO, toUsers);
+			message.setSubject("Olá mundo!");
+			message.setText("Olá mundo, é nóis na fita zirkonio");
+			
+			Transport.send(message);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
