@@ -12,15 +12,22 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class App {
-	
-	
-	
-	
+			
 		public static void main(String[] args) {
 		Properties properties = new Properties();
 		
-		final MailSender mailSender = new MailSender("ale.fenandes23@gmail.com", "ratc elzt ddll ljwk", "alex.silva250@hotmail.com", "Alexandre", "Olá mundo"
-				, "Sou eu, Mario!");
+		StringBuilder stb = new StringBuilder();
+		stb.append("<h2>Sou eu, Mario!</h2>");
+		stb.append("<br/>");
+		stb.append("<a target=\"_blank\" href=\"https://www.myinstants.com/pt/instant/its-a-me-mario/\" style =\"color:green; text-align:center; text-decoration: none\">Clique aqui</a>");
+		
+		
+		final MailSender mailSender = new MailSender("ale.fenandes23@gmail.com", 
+				"ratc elzt ddll ljwk", 
+				"alex.silva250@hotmail.com", 
+				"Alexandre", 
+				"Olá mundo"
+				,stb.toString());
 
 		try {
 			properties.put("mail.smtp.ssl.trust", "*");
@@ -45,6 +52,7 @@ public class App {
 			message.setRecipients(Message.RecipientType.TO, toUsers);
 			message.setSubject(mailSender.getEmailSubject());
 			message.setText(mailSender.getEmailText());
+			message.setContent(mailSender.getEmailText(),"text/html; charset=utf-8" );
 			
 			Transport.send(message);
 			System.out.println("E-mail enviado com sucesso!");
