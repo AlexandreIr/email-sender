@@ -12,13 +12,18 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class App {
-	private static String email = "ale.fenandes23@gmail.com";
-	private static String password = "ratc elzt ddll ljwk";
-
-	public static void main(String[] args) {
+	
+	
+	
+	
+		public static void main(String[] args) {
 		Properties properties = new Properties();
+		
+		final MailSender mailSender = new MailSender("ale.fenandes23@gmail.com", "ratc elzt ddll ljwk", "alex.silva250@hotmail.com", "Alexandre", "Olá mundo"
+				, "Sou eu, Mario!");
 
 		try {
+			properties.put("mail.smtp.ssl.trust", "*");
 			properties.put("mail.smtp.auth", true);
 			properties.put("mail.smtp.starttls", "true");
 			properties.put("mail.smtp.host", "smtp.gmail.com");
@@ -29,22 +34,25 @@ public class App {
 			Session session = Session.getInstance(properties, new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(email, password);
+					return new PasswordAuthentication(mailSender.getEmail(), mailSender.getPassword());
 				}
 			});
 			
-			Address[] toUsers = InternetAddress.parse("alex.silva250@hotmail.com");
+			Address[] toUsers = InternetAddress.parse(mailSender.getReceiversList());
 			
 			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(email));
+			message.setFrom(new InternetAddress(mailSender.getEmail(), mailSender.getSender()));
 			message.setRecipients(Message.RecipientType.TO, toUsers);
-			message.setSubject("Olá mundo!");
-			message.setText("Olá mundo, é nóis na fita zirkonio");
+			message.setSubject(mailSender.getEmailSubject());
+			message.setText(mailSender.getEmailText());
 			
 			Transport.send(message);
+			System.out.println("E-mail enviado com sucesso!");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	
 }
