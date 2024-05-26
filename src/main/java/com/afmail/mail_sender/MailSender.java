@@ -1,8 +1,5 @@
 package com.afmail.mail_sender;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -166,7 +163,8 @@ public class MailSender {
 			
 			if(filePath!=null) {
 				MimeBodyPart attachment = new MimeBodyPart();
-				attachment.setDataHandler(new DataHandler(new ByteArrayDataSource(pdfSender(), "application/pdf")));
+				AttachmentClass att = new AttachmentClass(filePath, attchmentName);
+				attachment.setDataHandler(new DataHandler(new ByteArrayDataSource(att.fileSender(), "application/"+att.getFileExtension())));
 				attachment.setFileName(attchmentName);
 				multipart.addBodyPart(attachment);
 			}
@@ -190,11 +188,4 @@ public class MailSender {
 			e.printStackTrace();
 		}
 	}
-
-	private FileInputStream pdfSender() throws FileNotFoundException {
-		String path = filePath;
-		File file = new File(path);
-		return new FileInputStream(file);
-	}
-
 }

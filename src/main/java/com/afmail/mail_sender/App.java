@@ -16,9 +16,10 @@ public class App {
 				"Alexandre", 
 				"Olá mundo"
 				,stb.toString(),
-				"C:\\Users\\User\\Documents\\PDFS\\Certificações\\Certificado_HTML.pdf",
-				"This_pdf");
+				"C:\\Users\\User\\Desktop\\Metas.docx",
+				"Metas");
 		
 		mail.sendEmail();
+		
 		}
 }
