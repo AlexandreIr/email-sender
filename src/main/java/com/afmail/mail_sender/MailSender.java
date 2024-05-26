@@ -1,6 +1,24 @@
 package com.afmail.mail_sender;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Objects;
+import java.util.Properties;
+
+import javax.activation.DataHandler;
+import javax.mail.Address;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
 public class MailSender {
 	private String email;
@@ -9,8 +27,10 @@ public class MailSender {
 	private String sender;
 	private String emailSubject;
 	private String emailText;
-	
-	public MailSender() {}
+	private String filePath;
+
+	public MailSender() {
+	}
 
 	public MailSender(String email, String password, String receiversList, String sender, String emailSubject,
 			String emailText) {
@@ -21,6 +41,18 @@ public class MailSender {
 		this.sender = sender;
 		this.emailSubject = emailSubject;
 		this.emailText = emailText;
+	}
+
+	public MailSender(String email, String password, String receiversList, String sender, String emailSubject,
+			String emailText, String filePath) {
+		super();
+		this.email = email;
+		this.password = password;
+		this.receiversList = receiversList;
+		this.sender = sender;
+		this.emailSubject = emailSubject;
+		this.emailText = emailText;
+		this.filePath = filePath;
 	}
 
 	public String getEmail() {
@@ -71,6 +103,14 @@ public class MailSender {
 		this.emailText = emailText;
 	}
 
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(email, emailSubject, emailText, password, receiversList, sender);
@@ -89,7 +129,60 @@ public class MailSender {
 				&& Objects.equals(emailText, other.emailText) && Objects.equals(password, other.password)
 				&& Objects.equals(receiversList, other.receiversList) && Objects.equals(sender, other.sender);
 	}
-	
-	
-	
+
+	public void sendEmail() {
+		try {
+			Properties properties = new Properties();
+
+			properties.put("mail.smtp.ssl.trust", "*");
+			properties.put("mail.smtp.auth", true);
+			properties.put("mail.smtp.starttls", "true");
+			properties.put("mail.smtp.host", "smtp.gmail.com");
+			properties.put("mail.smtp.port", "465");
+			properties.put("mail.smtp.socketFactory.port", "465");
+			properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+			Session session = Session.getInstance(properties, new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(email, password);
+				}
+			});
+
+			Address[] toUsers = InternetAddress.parse(receiversList);
+			
+			Multipart multipart = new MimeMultipart();
+			
+			if(filePath!=null) {
+				MimeBodyPart attachment = new MimeBodyPart();
+				attachment.setDataHandler(new DataHandler(new ByteArrayDataSource(pdfSender(), "application/pdf")));
+				multipart.addBodyPart(attachment);
+			}
+
+			Message message = new MimeMessage(session);
+			MimeBodyPart msg = new MimeBodyPart();
+			message.setFrom(new InternetAddress(email, sender));
+			message.setRecipients(Message.RecipientType.TO, toUsers);
+			message.setSubject(emailSubject);
+			msg.setContent(emailText, "text/html; charset=utf-8");
+
+			multipart.addBodyPart(msg);
+			
+
+			message.setContent(multipart);
+
+			Transport.send(message);
+			System.out.println("E-mail enviado com sucesso!");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private FileInputStream pdfSender() throws FileNotFoundException {
+		String path = filePath;
+		File file = new File(path);
+		return new FileInputStream(file);
+	}
+
 }
