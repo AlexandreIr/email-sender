@@ -28,6 +28,7 @@ public class MailSender {
 	private String emailSubject;
 	private String emailText;
 	private String filePath;
+	private String attchmentName;
 
 	public MailSender() {
 	}
@@ -44,7 +45,7 @@ public class MailSender {
 	}
 
 	public MailSender(String email, String password, String receiversList, String sender, String emailSubject,
-			String emailText, String filePath) {
+			String emailText, String filePath, String attchmentName) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -53,6 +54,7 @@ public class MailSender {
 		this.emailSubject = emailSubject;
 		this.emailText = emailText;
 		this.filePath = filePath;
+		this.attchmentName = attchmentName;
 	}
 
 	public String getEmail() {
@@ -110,6 +112,15 @@ public class MailSender {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
+	
+
+	public String getAttchmentName() {
+		return attchmentName;
+	}
+
+	public void setAttchmentName(String attchmentName) {
+		this.attchmentName = attchmentName;
+	}
 
 	@Override
 	public int hashCode() {
@@ -156,6 +167,7 @@ public class MailSender {
 			if(filePath!=null) {
 				MimeBodyPart attachment = new MimeBodyPart();
 				attachment.setDataHandler(new DataHandler(new ByteArrayDataSource(pdfSender(), "application/pdf")));
+				attachment.setFileName(attchmentName);
 				multipart.addBodyPart(attachment);
 			}
 
