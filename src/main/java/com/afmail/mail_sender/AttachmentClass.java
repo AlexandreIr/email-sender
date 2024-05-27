@@ -3,7 +3,13 @@ package com.afmail.mail_sender;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Objects;
+
+import javax.activation.DataHandler;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.util.ByteArrayDataSource;
 
 public class AttachmentClass {
 	private String path;
@@ -67,5 +73,12 @@ public class AttachmentClass {
 	public FileInputStream fileSender() throws FileNotFoundException {
 		File file = new File(path);
 		return new FileInputStream(file);
+	}
+	
+	public MimeBodyPart createAttachment() throws FileNotFoundException, MessagingException, IOException {
+		MimeBodyPart attachment = new MimeBodyPart();
+		attachment.setDataHandler(new DataHandler(new ByteArrayDataSource(fileSender(), "application/"+getFileExtension())));
+		attachment.setFileName(getName()+getFileExtension());
+		return attachment;
 	}
 }

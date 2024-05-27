@@ -3,7 +3,6 @@ package com.afmail.mail_sender;
 import java.util.Objects;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
 import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -15,7 +14,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
 
 public class MailSender {
 	private String email;
@@ -162,11 +160,8 @@ public class MailSender {
 			Multipart multipart = new MimeMultipart();
 			
 			if(filePath!=null) {
-				MimeBodyPart attachment = new MimeBodyPart();
 				AttachmentClass att = new AttachmentClass(filePath, attchmentName);
-				attachment.setDataHandler(new DataHandler(new ByteArrayDataSource(att.fileSender(), "application/"+att.getFileExtension())));
-				attachment.setFileName(attchmentName);
-				multipart.addBodyPart(attachment);
+				multipart.addBodyPart(att.createAttachment());
 			}
 
 			Message message = new MimeMessage(session);
