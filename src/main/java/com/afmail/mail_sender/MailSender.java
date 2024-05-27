@@ -1,11 +1,15 @@
 package com.afmail.mail_sender;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
 import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -22,8 +26,8 @@ public class MailSender {
 	private String sender;
 	private String emailSubject;
 	private String emailText;
-	private String filePath;
-	private String attchmentName;
+	
+	private List<FileClass> fileInfo = new ArrayList<>();
 
 	public MailSender() {
 	}
@@ -37,19 +41,6 @@ public class MailSender {
 		this.sender = sender;
 		this.emailSubject = emailSubject;
 		this.emailText = emailText;
-	}
-
-	public MailSender(String email, String password, String receiversList, String sender, String emailSubject,
-			String emailText, String filePath, String attchmentName) {
-		super();
-		this.email = email;
-		this.password = password;
-		this.receiversList = receiversList;
-		this.sender = sender;
-		this.emailSubject = emailSubject;
-		this.emailText = emailText;
-		this.filePath = filePath;
-		this.attchmentName = attchmentName;
 	}
 
 	public String getEmail() {
@@ -99,22 +90,13 @@ public class MailSender {
 	public void setEmailText(String emailText) {
 		this.emailText = emailText;
 	}
-
-	public String getFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
 	
-
-	public String getAttchmentName() {
-		return attchmentName;
+	public List<FileClass> getFileInfo() {
+		return fileInfo;
 	}
 
-	public void setAttchmentName(String attchmentName) {
-		this.attchmentName = attchmentName;
+	public void setFileInfo(List<FileClass> fileInfo) {
+		this.fileInfo = fileInfo;
 	}
 
 	@Override
@@ -159,9 +141,17 @@ public class MailSender {
 			
 			Multipart multipart = new MimeMultipart();
 			
-			if(filePath!=null) {
-				AttachmentClass att = new AttachmentClass(filePath, attchmentName);
-				multipart.addBodyPart(att.createAttachment());
+			if(fileInfo.size()>0) {
+				fileInfo
+				.forEach(fi-> {
+					try {
+						multipart
+								.addBodyPart(new AttachmentClass(fi.getFileName(), fi.getFilePath())
+										.createAttachment());
+					} catch (MessagingException | IOException e) {
+						e.printStackTrace();
+					}
+				});
 			}
 
 			Message message = new MimeMessage(session);
